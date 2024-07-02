@@ -9,6 +9,7 @@ import { LikesController } from "./library/likes.controller";
 import { LikesService } from "./library/likes.service";
 import { LocalEmailProvider, MailerService } from "./common/mailer";
 import Database from "better-sqlite3";
+import cookieParser from "cookie-parser";
 
 export type AppConfig =
   | {
@@ -36,6 +37,7 @@ export function build(config: AppConfig) {
   // migrate(db, { migrationsFolder: "drizzle" });
 
   app.use(express.json());
+  app.use(cookieParser());
   app.use(new MoviesController(new MoviesService(db)).routes);
   app.use(
     new UsersController(
