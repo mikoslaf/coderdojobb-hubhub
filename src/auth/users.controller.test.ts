@@ -4,7 +4,6 @@ import request from "supertest";
 import { setupTestDb } from "../test/helpers";
 import { users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
-import { a } from "vitest/dist/suite-IbNSsUWN";
 
 describe("UsersController", () => {
   test("POST /sing-up", async () => {
@@ -62,5 +61,23 @@ describe("UsersController", () => {
     expect(testUser.id).toBe(res.body.data.id);
     expect(testUser.email).toBe(res.body.data.email);
     expect(result).toBe(true);
+  });
+
+  test("POST /sing-out", async () => {
+    const { db } = setupTestDb();
+
+    const app = build({
+      db,
+    });
+
+    const res = await request(app).post("/sign-out").set("Cookie", ["autorization=123"]).expect(200);
+
+    const array_cookies = Array.from(res.headers["set-cookie"]);
+    
+    const result = array_cookies.find((element) => {
+      return element.startsWith("autorization");
+    });
+    
+    expect(result).include("01 Jan 1970 00:00:00 GMT");
   });
 });

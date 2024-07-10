@@ -17,13 +17,14 @@ export class UsersController {
 
   constructor(private readonly usersService: UsersService) {
     this.routes.get("/users", this.index);
-    this.routes.get("/test", this.testSignIn);
+    //this.routes.get("/test", this.testSignIn);
     this.routes.get("/users/:id", this.get);
     this.routes.post("/users", this.create);
     this.routes.delete("/users/:id", this.delete);
     this.routes.patch("/users/:id", this.update);
     this.routes.post("/sign-up", this.register);
     this.routes.post("/sign-in", this.signIn);
+    this.routes.post("/sign-out", this.signOut);
   }
 
   index = async (req: Request, res: Response) => {
@@ -34,7 +35,6 @@ export class UsersController {
 
     const authorization = req.cookies['autorization'];
 
-    process.env.SECRET = "SECRET" // zmienić to!
     const payload = jwt.verify(authorization, process.env.SECRET);
     console.log(payload);
     
@@ -44,32 +44,32 @@ export class UsersController {
     });
   };
 
-  testSignIn = async (req: Request, res: Response) => {
+  // testSignIn = async (req: Request, res: Response) => {
+ 
+  //   // await this.usersService.register({email: "Test@test.com", password: "password"});
 
-    //await this.usersService.register({email: "Test@test.com", password: "password"});
+  //   let { token, user } = await this.usersService.logIn(
+  //     { 
+  //       email: "Test@test.com", 
+  //       password: "password"
+  //     }
+  //   );
 
-    let { token, user } = await this.usersService.logIn(
-      { 
-        email: "Test@test.com", 
-        password: "password"
-      }
-    );
+  //   const formatedUser = {
+  //     id: user.id,
+  //     email: user.email,
+  //     firstName: user.firstName,
+  //     lastName: user.lastName
+  //   };
 
-    const formatedUser = {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName
-    };
+  //   const date = new Date();
+  //   date.setDate(date.getDate() + 1);
+  //   res.cookie("autorization", token, { domain: "hubhub.local", sameSite: "lax", httpOnly: true, expires: date });
 
-    const date = new Date();
-    date.setDate(date.getDate() + 1);
-    res.cookie("autorization", token, { domain: "hubhub.local", sameSite: "lax", httpOnly: true, expires: date });
-
-    res.status(200).json({
-      data: formatedUser,
-    });
-  };
+  //   res.status(200).json({
+  //     data: formatedUser,
+  //   });
+  // };
 
   
   create = async (req: Request, res: Response) => {
@@ -179,5 +179,12 @@ export class UsersController {
     res.status(200).json({
       data: formatedUser,
     });
+  };
+
+  signOut = async (_req: Request, res: Response) => {
+
+    res.clearCookie("autorization", { domain: "hubhub.local" }); 
+
+    res.status(200).json();
   };
 }
